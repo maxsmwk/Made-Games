@@ -1,16 +1,20 @@
 import pygame 
 
 pygame.init()
+
 screen_width = 800
-screen_height = 400
+screen_height = 600
+
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 pygame.display.set_caption("test game")
 
 clock = pygame.time.Clock()
 
-test_surface = pygame.Surface((100, 200))
-test_surface.fill("Red")
+test_font = pygame.font.Font(None, 50)
+text_surface = test_font.render("Hello World", False, "Red")
+example_button = pygame.image.load("Game 1/graphics/buttonsprites/exbutton.png")
+wooden_floor = pygame.image.load("Game 1/graphics/scenes/woodenfloor.png")
 
 run = True
 while run:
@@ -19,7 +23,9 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-    screen.blit(test_surface,(0,0))
+    screen.blit(example_button, (200,100))
+    screen.blit(wooden_floor, (400,0))
+    screen.blit(text_surface, (300, 50))
 
     pygame.display.update()
     clock.tick(60)
