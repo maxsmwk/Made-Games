@@ -2,7 +2,17 @@ import pygame
 
 def timer():
     current_time = pygame.time.get_ticks() - start_time
-    timer_surf = test_font.render(str(current_time), False, "Red")
+    seconds = current_time // 1000
+    minutes = 0
+    hours = 0
+    if seconds > 60:
+        minutes += 1
+        seconds //= 60
+    if minutes > 60:
+        hours += 1
+        minutes = 0
+    string_timer = str(hours) + ":"+ str(minutes) + ":" + str(seconds)
+    timer_surf = test_font.render(string_timer, False, "Red")
     timer_rect = timer_surf.get_rect(center = (600, 200))
     screen.blit(timer_surf, timer_rect)
 
