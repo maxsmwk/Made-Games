@@ -7,7 +7,7 @@ def timer():
     hours = 0
     if seconds > 60:
         minutes += 1
-        seconds //= 60
+        seconds = 0
     if minutes > 60:
         hours += 1
         minutes = 0

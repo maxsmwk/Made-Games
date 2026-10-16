@@ -174,18 +174,12 @@ def sInput(prompt, delay=0.05):
 	sPrint(prompt, delay)
 	return input()
 
-
-def main():
-	user1 = Player(sInput("Welcome to python dungeon crawl! What's your player's name? "))
-	gameStart = sInput("Have you ever played before? (y/n) ")
-	while gameStart == "n" or gameStart == "no":
-		gameStart = sInput("Python dungeon crawl is a turn based, simple dungeon crawl developed by Maximo Salinas-Miner. You will crawl through a total of 15 rooms, with a special challenge room every fifth room. In each room, you will encounter an enemy and a potion that will increase your stats. In some rooms, you may even find gear that will boost your stats further. You may decide to skip a room, but you must enter the special challenge room. After you beat a challenge room, the enemies become stronger. Your goal is to beat the boss at the 15th room. Are you ready to continue?(y/n) ")
-	#floor 1
+def game_loop(user1, roomLvl):
 	roomCounter = 0
-	while roomCounter <5:
-		level = Room(roomCounter)
+	while roomLvl < 5:
+		level = Room(roomLvl)
 		level.floor(randint(1,5), randint(1,10), randint(1,3))
-		enter = sInput("You are on room " + str(roomCounter) + ". You see a room with a " + level.enemyLvl[0] + ". Will you enter? (y/n) ")
+		enter = sInput("You are on room " + str(roomLvl) + ". You see a room with a " + level.enemyLvl[0] + ". Will you enter? (y/n) ")
 		if enter == "y" or enter == "yes":
 			#if enemy outspeeds sequence
 			if user1.speed < level.enemyLvl[2]:
@@ -195,11 +189,11 @@ def main():
 					sPrint("The enemy swings at you, the blow lethal. You die on the cold, dark dungeon floor. Maybe another soul can conquer the unrelenting dungeon.")
 					sPrint("GAME")
 					sPrint("OVER")
-					
 				fleeOrNo = sInput("The enemy blindly swings at you, dealing damage. You originally had " + str(user1.health) + " health, but now you have " + str(newHealth) + " health. Do you want to flee? (y/n) ")
 				if fleeOrNo == "y" or fleeOrNo == "yes":
 					sPrint("You barely escape the clutches of the enemy.")
 					roomCounter = roomCounter + 1
+					roomLvl += roomCounter
 					continue
 				else:
 					userAttack = level.enemyLvl[3] - user1.strength
@@ -248,40 +242,54 @@ def main():
 			elif level.ifGear == "None":
 				sPrint("You find no gear in the room.") 
 			roomCounter = roomCounter + 1
+			roomLvl += roomCounter
 		else:
 			sPrint("You decide to skip the room, moving on to the next one.")
 			roomCounter = roomCounter + 1
-	#floor 1 boss(riddle)
+			roomLvl += roomCounter
+
+def riddle():
 	riddle1 = "I become shorter the older I get. What am I?"
 	riddle2 = "What has hands but cannot clap?"
 	riddle3 = "The more of this there is, the less you see. What is it?"
 	riddleChooser = randint(1,3)
 	sPrint("You enter a dark, cavernous room. 2 doors stand in front of you like leviathans. You can hear a voice from beyond bellow a riddle.")
-	while roomCounter == 5:
+	loop = True
+	while loop:
 		if riddleChooser == 1:
 			riddle = sInput(riddle1)
 			if riddle == "candle" or riddle == "Candle":
 				sPrint("The doors shutter open, with a sound that echoes across the room. You move past the doors.")
-				roomCounter = roomCounter + 1
+				loop = False
 			else:
 				sPrint("The doors stay stagnant. The answer must have been wrong. Try again.")
 		elif riddleChooser == 2:
 			riddle = sInput(riddle2)
 			if riddle == "clock" or riddle == "Clock":
 				sPrint("The doors shutter open, with a sound that echoes across the room. You move past the doors.")
-				roomCounter = roomCounter + 1
+				loop = False
 			else:
 				sPrint("The doors stay stagnant. The answer must have been wrong. Try again.")
 		elif riddleChooser == 3:
 			riddle = sInput(riddle3)
 			if riddle == "darkness" or riddle == "Darkness":
 				sPrint("The doors shutter open, with a sound that echoes across the room. You move past the doors.")
-				roomCounter = roomCounter + 1
+				loop = False
 			else:
 				sPrint("The doors stay stagnant. The answer must have been wrong. Try again.")
 		else:
 			sPrint("you shouldn't be seeing this lol. You get to skip this ig")	
-			roomCounter = roomCounter + 1
+			loop = False
+def main():
+	user1 = Player(sInput("Welcome to python dungeon crawl! What's your player's name? "))
+	gameStart = sInput("Have you ever played before? (y/n) ")
+	while gameStart == "n" or gameStart == "no":
+		gameStart = sInput("Python dungeon crawl is a turn based, simple dungeon crawl developed by Maximo Salinas-Miner. You will crawl through a total of 15 rooms, with a special challenge room every fifth room. In each room, you will encounter an enemy and a potion that will increase your stats. In some rooms, you may even find gear that will boost your stats further. You may decide to skip a room, but you must enter the special challenge room. After you beat a challenge room, the enemies become stronger. Your goal is to beat the boss at the 15th room. Are you ready to continue?(y/n) ")
+
+	game_loop(user1, 0)
+	#floor 1 boss(riddle)
+	riddle()
+
 	#floor 2
 	while roomCounter > 5 and roomCounter < 10:
 		level = Room(roomCounter)
