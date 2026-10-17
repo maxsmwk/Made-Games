@@ -4,6 +4,11 @@ from random import randint, random
 import sys
 import time
 
+#CONSTANTS
+BOSS_HEALTH = 25
+BOSS_SPEED = 5
+BOSS_STRENGTH = 7
+
 class Enemy:
 	def __init__(self, strength=0, speed=0, health=0, name=""):
 		self.strength = strength
@@ -163,20 +168,20 @@ class Room:
 			}
 			self.ifGear = gearTypes[ifGear]
 
-def sPrint(text, delay=0.05):
+def sPrint(text, delay = 0):
 	for char in text:
 		sys.stdout.write(char)
 		sys.stdout.flush()
 		time.sleep(delay)
 	sys.stdout.write("\n")
 
-def sInput(prompt, delay=0.05):
+def sInput(prompt, delay = 0):
 	sPrint(prompt, delay)
 	return input()
 
 def game_loop(user1, roomLvl):
 	roomCounter = 0
-	while roomLvl < 5:
+	while roomCounter < 5:
 		level = Room(roomLvl)
 		level.floor(randint(1,5), randint(1,10), randint(1,3))
 		enter = sInput("You are on room " + str(roomLvl) + ". You see a room with a " + level.enemyLvl[0] + ". Will you enter? (y/n) ")
@@ -193,7 +198,7 @@ def game_loop(user1, roomLvl):
 				if fleeOrNo == "y" or fleeOrNo == "yes":
 					sPrint("You barely escape the clutches of the enemy.")
 					roomCounter = roomCounter + 1
-					roomLvl += roomCounter
+					roomLvl += 1
 					continue
 				else:
 					userAttack = level.enemyLvl[3] - user1.strength
@@ -242,11 +247,11 @@ def game_loop(user1, roomLvl):
 			elif level.ifGear == "None":
 				sPrint("You find no gear in the room.") 
 			roomCounter = roomCounter + 1
-			roomLvl += roomCounter
+			roomLvl += 1
 		else:
 			sPrint("You decide to skip the room, moving on to the next one.")
 			roomCounter = roomCounter + 1
-			roomLvl += roomCounter
+			roomLvl += 1
 
 def riddle():
 	riddle1 = "I become shorter the older I get. What am I?"
@@ -280,94 +285,16 @@ def riddle():
 		else:
 			sPrint("you shouldn't be seeing this lol. You get to skip this ig")	
 			loop = False
-def main():
-	user1 = Player(sInput("Welcome to python dungeon crawl! What's your player's name? "))
-	gameStart = sInput("Have you ever played before? (y/n) ")
-	while gameStart == "n" or gameStart == "no":
-		gameStart = sInput("Python dungeon crawl is a turn based, simple dungeon crawl developed by Maximo Salinas-Miner. You will crawl through a total of 15 rooms, with a special challenge room every fifth room. In each room, you will encounter an enemy and a potion that will increase your stats. In some rooms, you may even find gear that will boost your stats further. You may decide to skip a room, but you must enter the special challenge room. After you beat a challenge room, the enemies become stronger. Your goal is to beat the boss at the 15th room. Are you ready to continue?(y/n) ")
 
-	game_loop(user1, 0)
-	#floor 1 boss(riddle)
-	riddle()
-
-	#floor 2
-	while roomCounter > 5 and roomCounter < 10:
-		level = Room(roomCounter)
-		level.floor(randint(1,5), randint(1,10), randint(1,3))
-		enter = sInput("You are on room " + str(roomCounter) + ". You see a room with a " + level.enemyLvl[0] + ". Will you enter? (y/n) ")
-		if enter == "y" or enter == "yes":
-			#if enemy outspeeds sequence
-			newHealth = user1.health
-			if user1.speed < level.enemyLvl[2]:
-				enemyAttack = user1.health - level.enemyLvl[1]
-				newHealth = enemyAttack
-				if newHealth <= 0:
-					sPrint("The enemy swings at you, the blow lethal. You die on the cold, dark dungeon floor. Maybe another soul can conquer the unrelenting dungeon.")
-					sPrint("GAME")
-					sPrint("OVER")
-					exit()
-				fleeOrNo = sInput("The enemy blindly swings at you, dealing damage. You originally had " + str(user1.health) + " health, but now you have " + str(newHealth) + " health. Do you want to flee? (y/n) ")
-				if fleeOrNo == "y" or fleeOrNo == "yes":
-					sPrint("You barely escape the clutches of the enemy.")
-					roomCounter = roomCounter + 1
-					continue
-				else:
-					userAttack = level.enemyLvl[3] - user1.strength
-					newEnemyHealth = userAttack
-					while newEnemyHealth > 0:
-						sPrint("You swing at the enemy, dealing " + str(user1.strength) + " damage. The enemy has " + str(newEnemyHealth) + " health left.")
-						enemyAttack = newHealth - level.enemyLvl[1]
-						if enemyAttack <= 0:
-							sPrint("The enemy swings at you. Your exhausted body can't take the blow. You die on the cold, dark dungeon floor. Maybe another soul can conquer the unrelenting dungeon.")
-							sPrint("GAME")
-							sPrint("OVER")
-							exit()
-						sPrint("The enemy swings at you, dealing " + str(level.enemyLvl[1]) + " damage. You had " + str(newHealth) + " health. Now you have " + str(enemyAttack) + " health left.")
-						newHealth = enemyAttack
-						newEnemyHealth = newEnemyHealth - user1.strength
-					if newEnemyHealth <= 0:
-						sPrint("You decide to fight the enemy. You swing with great force at the enemy, vanquishing it. You move to the back of the room to take a look at your spoils.")
-			#if user outspeeds sequence
-			elif user1.speed >= level.enemyLvl[2]:
-				userAttack = level.enemyLvl[3] - user1.strength
-				newEnemyHealth = userAttack
-				while newEnemyHealth > 0:
-					sPrint("You swing at the enemy, dealing " + str(user1.strength) + " damage. The enemy has " + str(newEnemyHealth) + " health left.")
-					enemyAttack = newHealth - level.enemyLvl[1]
-					if enemyAttack <= 0:
-						sPrint("The enemy swings at you. Your exhausted body can't take the blow. You die on the cold, dark dungeon floor. Maybe another soul can conquer the unrelenting dungeon.")
-						sPrint("GAME")
-						sPrint("OVER")
-						exit()
-					sPrint("The enemy swings at you, dealing " + str(level.enemyLvl[1]) + " damage. You had " + str(newHealth) + " health. Now you have " + str(enemyAttack) + " health left.")
-					newHealth = enemyAttack
-					newEnemyHealth = newEnemyHealth - user1.strength
-				if newEnemyHealth <= 0:
-					sPrint("You vanquish the enemy. You move to the back of the room to take a look at your spoils.")
-			user1.potionUpg(level.potionType)
-			sPrint("You find a " + level.potionType + ". You consume the potion, increasing your stats. Your stats are now: Strength: " + str(user1.strength) + ", Speed: " + str(user1.speed) + ", Health: " + str(user1.health) + ".")
-			if level.ifGear == "Lv.2 Sword" :
-					user1.floor2gear(level.ifGear)
-					sPrint("Along with the potion, you find a " + level.ifGear + ". You equip the " + level.ifGear + ". You feel stronger. Your stats are now: Strength: " + str(user1.strength) + ", Speed: " + str(user1.speed) + ", Health: " + str(user1.health) + ".")
-			elif level.ifGear == "Lv.2 Shield" :
-					user1.floor2gear(level.ifGear)
-					sPrint("Along with the potion, you find a " + level.ifGear + ". You equip the " + level.ifGear + ". You feel more durable. Your stats are now: Strength: " + str(user1.strength) + ", Speed: " + str(user1.speed) + ", Health: " + str(user1.health) + ".")
-			elif level.ifGear == "Lv.2 Armor" :
-					user1.floor2gear(level.ifGear)
-					sPrint("Along with the potion, you find a " + level.ifGear + ". You equip the " + level.ifGear + ". You feel more durable. Your stats are now: Strength: " + str(user1.strength) + ", Speed: " + str(user1.speed) + ", Health: " + str(user1.health) + ".")
-			elif level.ifGear == "None":
-				sPrint("You find no gear in the room.") 
-			roomCounter = roomCounter + 1
-		else:
-			sPrint("You decide to skip the room, moving on to the next one.")
-			roomCounter = roomCounter + 1
+def floor2boss():
+	loop = True
 	decision = sInput("You come to a clearing in the dungeon. It looks like an archway. Proceed? (y/n): ")
 	while decision == "n" or decision == "no":
 		decision = sInput("You try turning back, only to realize the way you came is completely blocked off. You have no choice but to enter.")
 		decision = 0
 	sPrint("You enter the room. In the middle is a garguantuan beast. It has ginormous appendages, and is chewing on the armor of a fallen knight. It lets out an intense roar that pierces your eardrums once it sees you.")
 	room10boss = sInput("You see the beast is blocking the exit. You have to face this creature. You are faced with 4 options, brave Knight. what wILL you do? Will you: A: try to lunge at it? B: try to leap on top of it to control it? C: try to run around it?")
-	while roomCounter == 10:
+	while loop:
 		if room10boss == "A" or room10boss == "a":
 			sPrint("Your pitiful attempt to lunge at the beast is met with a brutal swing of its arms. It's huge muscles send you flying in the air, and you crash into a wall, your entire body broken. With another quick movement of it's arm, it crushes you, and you are splattered like a bug all over the dungeon floor. Your journey comes to an abrupt end. Your final thoughts are - Maybe another soul can KILL this beast.(Hint: look at the strangely capitalized letters.)")
 			sPrint("GAME")
@@ -385,92 +312,21 @@ def main():
 			exit()
 		elif room10boss == "kill" or room10boss == "Kill" or room10boss == "KILL":
 			sPrint("You discard all the other options. The only way to take care of this beast is to kill it. You run back and forth, dizzying and exhausting the beast. It roars as it loses it's energy. It's arms fall flat, and you leap on top of them, climbing towards it's head. Once there, you drive your fists into the beasts eyes. It cries out and retaliates, but you make sure its eyes are nothing more than a bloody pulp. The beast collapses on the ground, wailing out. While it squirms, you jump off its head and grab loose debris from the ground. You repeatedly bash the debris into its skull, until the beast becomes limp. You have conquered this beast. You move to the next set of rooms.")
-			roomCounter = roomCounter + 1
-			continue
+			loop = False
+			break
 		room10boss = sInput("You must fight it! Find a way to dodge it, or KILL it.(Options: A: try to Lunge at it? B: try to Leap on top of it to control it? C: try to run around it?)")
 	#floor 3
-	while roomCounter > 10 and roomCounter < 15:
-		level = Room(roomCounter)
-		level.floor(randint(1,5), randint(1,10), randint(1,3))
-		enter = sInput("You are on room " + str(roomCounter) + ". You see a room with a " + level.enemyLvl[0] + ". Will you enter? (y/n) ")
-		if enter == "y" or enter == "yes":
-			#if enemy outspeeds sequence
-			newHealth = user1.health
-			if user1.speed < level.enemyLvl[2]:
-				enemyAttack = user1.health - level.enemyLvl[1]
-				newHealth = enemyAttack
-				if newHealth <= 0:
-					sPrint("The enemy swings at you, the blow lethal. You die on the cold, dark dungeon floor. Maybe another soul can conquer the unrelenting dungeon.")
-					sPrint("GAME")
-					sPrint("OVER")
-					exit()
-				fleeOrNo = sInput("The enemy blindly swings at you, dealing damage. You originally had " + str(user1.health) + " health, but now you have " + str(newHealth) + " health. Do you want to flee? (y/n) ")
-				if fleeOrNo == "y" or fleeOrNo == "yes":
-					sPrint("You barely escape the clutches of the enemy.")
-					roomCounter = roomCounter + 1
-					continue
-				else:
-					userAttack = level.enemyLvl[3] - user1.strength
-					newEnemyHealth = userAttack
-					while newEnemyHealth > 0:
-						sPrint("You swing at the enemy, dealing " + str(user1.strength) + " damage. The enemy has " + str(newEnemyHealth) + " health left.")
-						enemyAttack = newHealth - level.enemyLvl[1]
-						if enemyAttack <= 0:
-							sPrint("The enemy swings at you. Your exhausted body can't take the blow. You die on the cold, dark dungeon floor. Maybe another soul can conquer the unrelenting dungeon.")
-							sPrint("GAME")
-							sPrint("OVER")
-							exit()
-						sPrint("The enemy swings at you, dealing " + str(level.enemyLvl[1]) + " damage. You had " + str(newHealth) + " health. Now you have " + str(enemyAttack) + " health left.")
-						newHealth = enemyAttack
-						newEnemyHealth = newEnemyHealth - user1.strength
-					if newEnemyHealth <= 0:
-						sPrint("You decide to fight the enemy. You swing with great force at the enemy, vanquishing it. You move to the back of the room to take a look at your spoils.")
-			#if user outspeeds sequence
-			elif user1.speed >= level.enemyLvl[2]:
-				userAttack = level.enemyLvl[3] - user1.strength
-				newEnemyHealth = userAttack
-				while newEnemyHealth > 0:
-					sPrint("You swing at the enemy, dealing " + str(user1.strength) + " damage. The enemy has " + str(newEnemyHealth) + " health left.")
-					enemyAttack = newHealth - level.enemyLvl[1]
-					if enemyAttack <= 0:
-						sPrint("The enemy swings at you. Your exhausted body can't take the blow. You die on the cold, dark dungeon floor. Maybe another soul can conquer the unrelenting dungeon.")
-						sPrint("GAME")
-						sPrint("OVER")
-						exit()
-					sPrint("The enemy swings at you, dealing " + str(level.enemyLvl[1]) + " damage. You had " + str(newHealth) + " health. Now you have " + str(enemyAttack) + " health left.")
-					newHealth = enemyAttack
-					newEnemyHealth = newEnemyHealth - user1.strength
-				if newEnemyHealth <= 0:
-					sPrint("You vanquish the enemy. You move to the back of the room to take a look at your spoils.")
-			user1.potionUpg(level.potionType)
-			sPrint("You find a " + level.potionType + ". You consume the potion, increasing your stats. Your stats are now: Strength: " + str(user1.strength) + ", Speed: " + str(user1.speed) + ", Health: " + str(user1.health) + ".")
-			if level.ifGear == "Lv.3 Sword" :
-					user1.floor3gear(level.ifGear)
-					sPrint("Along with the potion, you find a " + level.ifGear + ". You equip the " + level.ifGear + ". You feel stronger. Your stats are now: Strength: " + str(user1.strength) + ", Speed: " + str(user1.speed) + ", Health: " + str(user1.health) + ".")
-			elif level.ifGear == "Lv.3 Shield" :
-					user1.floor3gear(level.ifGear)
-					sPrint("Along with the potion, you find a " + level.ifGear + ". You equip the " + level.ifGear + ". You feel more durable. Your stats are now: Strength: " + str(user1.strength) + ", Speed: " + str(user1.speed) + ", Health: " + str(user1.health) + ".")
-			elif level.ifGear == "Lv.3 Armor" :
-					user1.floor3gear(level.ifGear)
-					sPrint("Along with the potion, you find a " + level.ifGear + ". You equip the " + level.ifGear + ". You feel more durable. Your stats are now: Strength: " + str(user1.strength) + ", Speed: " + str(user1.speed) + ", Health: " + str(user1.health) + ".")
-			elif level.ifGear == "None":
-				sPrint("You find no gear in the room.")
-			roomCounter = roomCounter + 1
-		else:
-			sPrint("You decide to skip the room, moving on to the next one.")
-			roomCounter = roomCounter + 1
-	bossHealth = 25
-	bossSpeed = 5
-	bossStrength = 7
+def floor3_boss(user1):
+	loop = True
 	sPrint("After the final dungeon room, you see the exit. You sprint towards it, but just before you reach it, the entrance closes!")
 	sPrint("You turn back, only to face a demon with 2 horns portruding from its skull.")
 	sPrint("Well, well, well. It seems you have reached the end of my dungeon. It says. You don't respond, standing in front of the demon courageously. ")
 	sPrint("You don't talk much, huh? He pulls out 2 humongous swords. No one has ever escaped my wrath. Today will be no different. You prepare for battle.")
-	while roomCounter == 15:
+	while loop:
 		#if demon outspeeds
 			newHealth = user1.health
-			if user1.speed < bossSpeed:
-				bossAttack = user1.health - bossStrength
+			if user1.speed < BOSS_SPEED:
+				bossAttack = user1.health - BOSS_STRENGTH
 				newHealth = bossAttack
 				if newHealth <= 0:
 					sPrint("The demon takes one quick swing at you, and you are split in half. Right before you die, you hear his cruel laugh. You die on the cold, dark dungeon floor. Maybe another soul can conquer the unrelenting dungeon.")
@@ -478,43 +334,70 @@ def main():
 					sPrint("OVER")
 					exit()
 				else:
-					sPrint("The demon swings its massive swords at you dealing " + str(bossStrength) + " damage. You had " + str(user1.health) + " health. Now you have " + str(newHealth) + " health left.")
-					userAttack = bossHealth - user1.strength
+					sPrint("The demon swings its massive swords at you dealing " + str(BOSS_STRENGTH) + " damage. You had " + str(user1.health) + " health. Now you have " + str(newHealth) + " health left.")
+					userAttack = BOSS_HEALTH - user1.strength
 					newBossHealth = userAttack
 					while newBossHealth > 0:
 						sPrint("You swing with all your might at the demon, dealing " + str(user1.strength) + " damage. The demon has " + str(newBossHealth) + " health left.")
-						bossAttack = newHealth - bossStrength
+						bossAttack = newHealth - BOSS_STRENGTH
 						if bossAttack <= 0:
 							sPrint("The demon swings at you with his swords. You put up a good fight, but are ultimately no match for his raw power. You die on the cold, dark dungeon floor another victim taken. Maybe another soul can kill the demon.")
 							sPrint("GAME")
 							sPrint("OVER")
 							exit()
-						sPrint("The demon swings at you, dealing " + str(bossStrength) + " damage. You had " + str(newHealth) + " health. Now you have " + str(bossAttack) + " health left.")
+						sPrint("The demon swings at you, dealing " + str(BOSS_STRENGTH) + " damage. You had " + str(newHealth) + " health. Now you have " + str(bossAttack) + " health left.")
 						newHealth = bossAttack
 						newBossHealth = newBossHealth - user1.strength
 					if newBossHealth <= 0:
 						sPrint("You swing, using all your might. The demon may think it is superior, but it is no match for your determination and grit. You kill the demon, freeing the dungeon from its evil tyrant.")
-						roomCounter = roomCounter + 1
-						continue
+						loop = False
+						break
 			#if user outspeeds sequence
-			elif user1.speed >= bossSpeed:
-				userAttack = bossHealth - user1.strength
+			elif user1.speed >= BOSS_SPEED:
+				userAttack = BOSS_HEALTH - user1.strength
 				newBossHealth = userAttack
 				while newBossHealth > 0:
 					sPrint("You swing at the demon, dealing " + str(user1.strength) + " damage. The demon has " + str(newBossHealth) + " health left.")
-					bossAttack = newHealth - bossStrength
+					bossAttack = newHealth - BOSS_STRENGTH
 					if bossAttack <= 0:
 						sPrint("The demon swings at you with his swords. You put up a good fight, but are ultimately no match for his raw power. You die on the cold, dark dungeon floor another victim taken. Maybe another soul can conquer the dungeon.")
 						sPrint("GAME")
 						sPrint("OVER")
 						exit()
-					sPrint("The demon swings at you, dealing " + str(bossStrength) + " damage. You had " + str(newHealth) + " health. Now you have " + str(bossAttack) + " health left.")
+					sPrint("The demon swings at you, dealing " + str(BOSS_STRENGTH) + " damage. You had " + str(newHealth) + " health. Now you have " + str(bossAttack) + " health left.")
 					newHealth = bossAttack
 					newBossHealth = newBossHealth - user1.strength
 				if newBossHealth <= 0:
 					sPrint("After, a long battle, you take one final swing at the demon. Its evil is no match for your pure heart, and you kill the demon. You have freed this dungeon from its curse.")
-					roomCounter = roomCounter + 1
-					continue
+					loop = False
+					break
+
+def main():
+	user1 = Player(sInput("Welcome to python dungeon crawl! What's your player's name? "))
+	gameStart = sInput("Have you ever played before? (y/n) ")
+	while gameStart == "n" or gameStart == "no":
+		gameStart = sInput("Python dungeon crawl is a turn based, simple dungeon crawl developed by Maximo Salinas-Miner. You will crawl through a total of 15 rooms, with a special challenge room every fifth room. In each room, you will encounter an enemy and a potion that will increase your stats. In some rooms, you may even find gear that will boost your stats further. You may decide to skip a room, but you must enter the special challenge room. After you beat a challenge room, the enemies become stronger. Your goal is to beat the boss at the 15th room. Are you ready to continue?(y/n) ")
+
+	#floor 1
+	game_loop(user1, 0)
+
+	#floor 1 boss(riddle)
+	riddle()
+
+	#floor 2
+	game_loop(user1, 6)
+
+	#floor 2 boss
+	floor2boss()
+
+	#floor 3
+	game_loop(user1, 11)
+
+	#final boss
+	floor3_boss(user1)
+
+
+	
 	sPrint("You stand over the demon's dead body, the hero of the dungeon. You exit the dungeon, and take in the fresh air. You are alive, and the cool breeze kisses your face. Congratulations")
 	sPrint("YOU")
 	sPrint("WIN")
