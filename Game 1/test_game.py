@@ -5,7 +5,7 @@ def timer():
     sec = current_time // 1000
     minutes = current_time // 60000
     hours = current_time // 360000
-    if seconds > 60:
+    if sec > 60:
         new_time_sec = pygame.time.get_ticks()
         current_time -= new_time_sec
         seconds = current_time // 1000
@@ -13,7 +13,7 @@ def timer():
         new_time_min = pygame.time.get_ticks()
         current_time -= new_time_min
         seconds = current_time // 60000
-    string_timer = str(hours) + ":"+ str(minutes) + ":" + str(seconds)
+    string_timer = str(hours) + ":"+ str(minutes) + ":" + str(sec)
     timer_surf = test_font.render(string_timer, False, "Red")
     timer_rect = timer_surf.get_rect(center = (600, 200))
     screen.blit(timer_surf, timer_rect)
