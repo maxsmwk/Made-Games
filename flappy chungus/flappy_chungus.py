@@ -72,7 +72,6 @@ def menu():
         play_button.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
         hp_font.messagedraw("Flappy Chungus", SCREEN_WIDTH/2, 100)
 
-
 pygame.init()
 
 #SCREEN
@@ -90,6 +89,8 @@ clock = pygame.time.Clock()
 #BUTTONS
 play_button_file = "flappy chungus/Graphics/Buttons/playbutton.png"
 play_button = Button(play_button_file, .7)
+play_again_button_file = "flappy chungus/Graphics/Buttons/playagain.png"
+play_again_button = Button(play_again_button_file)
 
 #SPRITES
 city_background_file = "flappy chungus/Graphics/Sprites/citybackground.jpg"
@@ -113,8 +114,10 @@ PLAYER_GRAV = 1
 #FONTS
 hp_font = Font("flappy chungus/Graphics/Text/PermanentMarker-Regular.ttf", 50)
 
-#LOOPS
+#CONDITIONS
 game_active = False
+if_play = False
+game_over = False
 menu_active = True
 run = True
 
@@ -127,13 +130,30 @@ while run:
             run = False
             break
         if event.type == pygame.MOUSEBUTTONDOWN:
+            #PLAY CLICK
             if play_button.rect.collidepoint(event.pos):
                 menu_active = False
-                game_active = True
+                if_play = True
+            #PLAY AGAIN
+            if play_again_button.rect.collidepoint(event.pos):
+                game_over = False
+                game_active = False
+                if_play = True
 
+    #MENU
     if menu_active:
         menu()
 
+    #BEFORE GAME ACTIVE
+    if if_play:
+    #KEYBOARD INPUT
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            if_play = False
+            game_active = True
+    #BG
+        city_background.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+        hp_font.messagedraw("Space To Begin", SCREEN_WIDTH/2, 100)
     if game_active:
         #KEYBOARD INPUT
         keys = pygame.key.get_pressed()
@@ -154,12 +174,16 @@ while run:
         PLAYER_GRAV += 1
         big_chungus_pixel_rect.y += PLAYER_GRAV
         if big_chungus_pixel_rect.bottom > SCREEN_HEIGHT:
-            game_active = False
+            game_over = True
+        elif big_chungus_pixel_rect.top < 50:
+            big_chungus_pixel_rect.top = 50
         screen.blit(big_chungus_pixel, big_chungus_pixel_rect)
 
-    if menu_active == False and game_active == False:
+    if game_over:
         screen.fill((60, 130, 200))
+        PLAYER_GRAV = 0
         big_chungus_pixel_rect.center = (50, SCREEN_HEIGHT/2)
+        play_again_button.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
         hp_font.messagedraw("Game Over...", SCREEN_WIDTH/2, 100)
 
     #DISPLAY UPDATE
