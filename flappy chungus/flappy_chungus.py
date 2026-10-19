@@ -1,6 +1,9 @@
 #FLAPPY CHUNGUS
 
 import pygame
+import random
+
+PLAYER_GRAV = 10
 
 #BUTTON CLASS
 class Button:
@@ -15,8 +18,12 @@ class Button:
     def draw(self):
         screen.blit(self.image, self.rect)
 
+
+
+
 #SPRITE CLASS
-class Sprite:
+
+class Player:
     def __init__(self, image, x, y, scale):
         self.image = pygame.image.load(image).convert_alpha()
         width = self.image.get_width()
@@ -46,12 +53,11 @@ clock = pygame.time.Clock()
 #BUTTONS
 play_button_file = "flappy chungus/Graphics/Buttons/playbutton.png"
 play_button = Button(play_button_file, 800, 300, .2)
-#SPRITES
+#Player
 big_chungus_pixel_file = "flappy chungus/Graphics/Sprites/pixelbigchungussprite.png"
-big_chungus_pixel = Sprite(big_chungus_pixel_file, 300, 200, .2)
+big_chungus_pixel = Player(big_chungus_pixel_file, 300, 200, .2)
 
-big_chungus_fancy_file = "flappy chungus/Graphics/Sprites/bigchungus fancysprit.png"
-big_chungus_fancy = Sprite(big_chungus_fancy_file, 1600, 800, .2)
+
 #LOOPS
 game_active = True
 run = True
@@ -64,18 +70,16 @@ while run:
         if event.type == pygame.QUIT:
             run = False
             break
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if play_button.rect.collidepoint(event.pos):
+                    print("pressed")
 
     if game_active:
         #KEYBOARD INPUT
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_w]:
+        if keys[pygame.K_SPACE]:
             pass
-        if keys[pygame.K_a]:
-            pass
-        if keys[pygame.K_s]:
-            pass
-        if keys[pygame.K_w]:
-            pass
+
 
         screen.fill("Black")
         big_chungus_pixel.draw()
