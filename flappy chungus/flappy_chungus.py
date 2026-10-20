@@ -80,13 +80,13 @@ def menu():
         play_button.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
         hp_font.messagedraw("Flappy Chungus", SCREEN_WIDTH/2, 100)
 
-def procedural_generate():
+def procedural_generate(gap_x_pos, gap_height, scale):
     
     #GENERATE ON SCREEN RANDOM
     uganda_knuckles_upper = Sprite(uganda_knuckles_file, scale)
     uganda_knuckles_lower = Sprite(uganda_knuckles_file, scale)
-    gap_width = uganda_knuckles_upper.width * scale
-    gap_rect = pygame.rect.Rect((gap_x_pos, gap_y_pos), (gap_width, gap_height1))
+    gap_width = uganda_knuckles_upper.width
+    gap_rect = pygame.rect.Rect((gap_x_pos, gap_y_pos), (gap_width, gap_height))
     gap_rect.midleft = (gap_x_pos, gap_y_pos)
 
     #GAP RECT POSITIONS
@@ -100,6 +100,7 @@ def procedural_generate():
     
     #DRAW TOP
     uganda_knuckles_upper.draw_rect_bottom_left(gap_rect_topleft_x, gap_rect_topleft_y)
+
 
 
     
@@ -131,10 +132,6 @@ city_background = Sprite(city_background_file, 3.1)
 
 uganda_knuckles_file = "flappy chungus/Graphics/Sprites/ugandaknucklessprite.png"
 
-#SPRITE CONSTANTS
-gap_x_pos = SCREEN_WIDTH/2
-gap_y_pos = SCREEN_HEIGHT/2
-
 
 #Player
 big_chungus_pixel_file = "flappy chungus/Graphics/Sprites/pixelbigchungussprite.png"
@@ -147,15 +144,16 @@ big_chungus_pixel_rect = big_chungus_pixel.get_rect()
 big_chungus_pixel_rect.center = (50, SCREEN_HEIGHT/2)
 PLAYER_GRAV = 0
 
-#procedural generate FIRST OBST
-obstacle_gap_lower1 = big_chungus_pixel_rect.height + 30
-obstacle_gap_higher1 = big_chungus_pixel_rect.height + 400
+#procedural generate 
+obstacle_gap_lower = big_chungus_pixel_rect.height + 30
+obstacle_gap_higher = big_chungus_pixel_rect.height + 400
 top_limit  = 50
 bottom_limit = SCREEN_HEIGHT
-gap_y_pos1 = random.randint(top_limit, bottom_limit)
-gap_height1 = random.randint(obstacle_gap_lower1, obstacle_gap_higher1)
-scale = random.randint(3,10)
-scale /= 10 
+gap_y_pos = SCREEN_HEIGHT/2
+gap_x_pos1 = SCREEN_WIDTH/2
+gap_x_pos2 = SCREEN_WIDTH + 200
+
+
 
 
 #FONTS
@@ -166,6 +164,8 @@ game_active = False
 if_play = False
 game_over = False
 menu_active = True
+obst1_on_screen = False
+obst2_on_screen = False
 run = True
 
 while run:
@@ -215,9 +215,37 @@ while run:
         city_background.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 
         #OBSTACLES
-        procedural_generate()
-        gap_x_pos1 -= 4
+        if obst2_on_screen == False and obst1_on_screen == False:
+            #GENERATE RANDOM OBSTACLE
+            gap_y_pos1 = random.randint(top_limit, bottom_limit)
+            gap_height1 = random.randint(obstacle_gap_lower, obstacle_gap_higher)
+            scale1 = random.randint(3,10)
+            scale1 /= 10 
+            
 
+            #MAKE SURE NOT TO INFITIELY CREATE OBSTS
+            obst1_on_screen = True
+
+        if obst1_on_screen:
+            procedural_generate(gap_x_pos1, gap_height1, scale1)
+            gap_x_pos1 -= 4
+
+        if gap_x_pos1 < 300 and obst2_on_screen == False:
+            #GENERATE RANDOM OBJECT
+            gap_x_pos2 = SCREEN_WIDTH + 100
+            gap_y_pos2 = random.randint(top_limit, bottom_limit)
+            gap_height2 = random.randint(obstacle_gap_lower, obstacle_gap_higher)
+            scale2 = random.randint(3,10)
+            scale2 /= 10 
+            #MAKE SURE NOT TO INFINITELY CREATE OBST
+            obst2_on_screen = True
+
+        if obst2_on_screen:
+            procedural_generate(gap_x_pos2, gap_height2, scale2)
+            gap_x_pos2 += 1
+
+        if gap_x_pos1 < -SCREEN_HEIGHT:
+            obst1_on_screen = False
         #PLAYER
         PLAYER_GRAV += 1
         big_chungus_pixel_rect.y += PLAYER_GRAV
