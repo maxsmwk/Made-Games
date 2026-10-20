@@ -31,10 +31,16 @@ class Sprite:
         self.rect.center = (x, y)
         screen.blit(self.image, self.rect)
 
-    def draw_rect(self, color, x, y):
-        self.rect.center = (x, y)
+    def draw_rect_top_left(self, x, y, color = "Red"):
+        self.rect.topleft = (x, y)
         pygame.draw.rect(screen, color, self.rect)
         screen.blit(self.image, self.rect)
+
+    def draw_rect_bottom_left(self, x, y, color = "Red"):
+        self.rect.bottomleft = (x, y)
+        pygame.draw.rect(screen, color, self.rect)
+        screen.blit(self.image, self.rect)
+
 
 
 
@@ -72,6 +78,27 @@ def menu():
         play_button.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
         hp_font.messagedraw("Flappy Chungus", SCREEN_WIDTH/2, 100)
 
+def procedural_generate():
+    #GAP BETWEEN THE OBSTACLES
+    obstacle_gap_lower = big_chungus_pixel_rect.height + 30
+    obstacle_gap_higher = big_chungus_pixel_rect + 200
+
+    #LIMITS OF PASSING RECT
+    top_limit  = 50
+    bottom_limit = SCREEN_HEIGHT
+
+    #GENERATE OFF SCREEN RANDOM
+    gap_height = random.randint(obstacle_gap_lower, obstacle_gap_higher)
+    gap_width = random.randint(50, 200)
+    scale = random.random()
+    x_pos = SCREEN_WIDTH/2
+    y_pos = SCREEN_HEIGHT/2
+    gap_rect = pygame.rect.Rect((x_pos, y_pos), (gap_width, gap_height))
+    pygame.draw.gap_rect(screen, "White", gap_rect)
+    uganda_knuckles_upper = Sprite(uganda_knuckles_file)
+    uganda_knuckles_lower = Sprite(uganda_knuckles_file)
+
+
 pygame.init()
 
 #SCREEN
@@ -97,7 +124,7 @@ city_background_file = "flappy chungus/Graphics/Sprites/citybackground.jpg"
 city_background = Sprite(city_background_file, 3.1)
 
 uganda_knuckles_file = "flappy chungus/Graphics/Sprites/ugandaknucklessprite.png"
-uganda_knuckles = Sprite(uganda_knuckles_file, .5)
+
 
 #Player
 big_chungus_pixel_file = "flappy chungus/Graphics/Sprites/pixelbigchungussprite.png"
@@ -155,6 +182,7 @@ while run:
         city_background.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
         hp_font.messagedraw("Space To Begin", SCREEN_WIDTH/2, 100)
     if game_active:
+
         #KEYBOARD INPUT
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
@@ -167,7 +195,6 @@ while run:
         city_background.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 
         #OBSTACLES
-        uganda_knuckles.draw_rect("Red", 1000, 700)
 
 
         #PLAYER
