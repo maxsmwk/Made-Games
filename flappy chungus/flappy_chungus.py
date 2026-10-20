@@ -24,6 +24,8 @@ class Sprite:
         width = self.image.get_width()
         height = self.image.get_height()
         self.image = pygame.transform.scale(self.image, ((width * scale), (height * scale)))
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
         self.rect = self.image.get_rect()
 
 
@@ -79,24 +81,28 @@ def menu():
         hp_font.messagedraw("Flappy Chungus", SCREEN_WIDTH/2, 100)
 
 def procedural_generate():
-    #GAP BETWEEN THE OBSTACLES
-    obstacle_gap_lower = big_chungus_pixel_rect.height + 30
-    obstacle_gap_higher = big_chungus_pixel_rect + 200
+    
+    #GENERATE ON SCREEN RANDOM
+    uganda_knuckles_upper = Sprite(uganda_knuckles_file, scale)
+    uganda_knuckles_lower = Sprite(uganda_knuckles_file, scale)
+    gap_width = uganda_knuckles_upper.width * scale
+    gap_rect = pygame.rect.Rect((gap_x_pos, gap_y_pos), (gap_width, gap_height1))
+    gap_rect.midleft = (gap_x_pos, gap_y_pos)
 
-    #LIMITS OF PASSING RECT
-    top_limit  = 50
-    bottom_limit = SCREEN_HEIGHT
+    #GAP RECT POSITIONS
+    gap_rect_bottomleft_x = gap_rect.bottomleft[0]
+    gap_rect_bottomleft_y = gap_rect.bottomleft[1]
+    gap_rect_topleft_x = gap_rect.topleft[0]
+    gap_rect_topleft_y = gap_rect.topleft[1]
+    
+    #DRAW BOTTOM
+    uganda_knuckles_lower.draw_rect_top_left(gap_rect_bottomleft_x, gap_rect_bottomleft_y)
+    
+    #DRAW TOP
+    uganda_knuckles_upper.draw_rect_bottom_left(gap_rect_topleft_x, gap_rect_topleft_y)
 
-    #GENERATE OFF SCREEN RANDOM
-    gap_height = random.randint(obstacle_gap_lower, obstacle_gap_higher)
-    gap_width = random.randint(50, 200)
-    scale = random.random()
-    x_pos = SCREEN_WIDTH/2
-    y_pos = SCREEN_HEIGHT/2
-    gap_rect = pygame.rect.Rect((x_pos, y_pos), (gap_width, gap_height))
-    pygame.draw.gap_rect(screen, "White", gap_rect)
-    uganda_knuckles_upper = Sprite(uganda_knuckles_file)
-    uganda_knuckles_lower = Sprite(uganda_knuckles_file)
+
+    
 
 
 pygame.init()
@@ -125,6 +131,10 @@ city_background = Sprite(city_background_file, 3.1)
 
 uganda_knuckles_file = "flappy chungus/Graphics/Sprites/ugandaknucklessprite.png"
 
+#SPRITE CONSTANTS
+gap_x_pos = SCREEN_WIDTH/2
+gap_y_pos = SCREEN_HEIGHT/2
+
 
 #Player
 big_chungus_pixel_file = "flappy chungus/Graphics/Sprites/pixelbigchungussprite.png"
@@ -135,7 +145,17 @@ scale = .2
 big_chungus_pixel = pygame.transform.scale(big_chungus_pixel, ((big_chungus_pixel_width * scale), (big_chungus_pixel_height * scale)))
 big_chungus_pixel_rect = big_chungus_pixel.get_rect()
 big_chungus_pixel_rect.center = (50, SCREEN_HEIGHT/2)
-PLAYER_GRAV = 1
+PLAYER_GRAV = 0
+
+#procedural generate FIRST OBST
+obstacle_gap_lower1 = big_chungus_pixel_rect.height + 30
+obstacle_gap_higher1 = big_chungus_pixel_rect.height + 400
+top_limit  = 50
+bottom_limit = SCREEN_HEIGHT
+gap_y_pos1 = random.randint(top_limit, bottom_limit)
+gap_height1 = random.randint(obstacle_gap_lower1, obstacle_gap_higher1)
+scale = random.randint(3,10)
+scale /= 10 
 
 
 #FONTS
@@ -195,7 +215,8 @@ while run:
         city_background.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 
         #OBSTACLES
-
+        procedural_generate()
+        gap_x_pos1 -= 4
 
         #PLAYER
         PLAYER_GRAV += 1
