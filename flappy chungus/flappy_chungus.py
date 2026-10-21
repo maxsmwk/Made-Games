@@ -42,29 +42,6 @@ class Sprite:
         self.rect.bottomleft = (x, y)
         pygame.draw.rect(screen, color, self.rect)
         screen.blit(self.image, self.rect)
-
-    def procedural_generate(self, gap_x_pos, gap_height, scale):
-        #SCORE CHECK
-        gap_width = self.width
-        gap_rect = pygame.rect.Rect((gap_x_pos, gap_y_pos), (gap_width, gap_height))
-        gap_rect.midleft = (gap_x_pos, gap_y_pos)
-
-            #GAP RECT POSITIONS
-        gap_rect_bottomleft_x = gap_rect.bottomleft[0]
-        gap_rect_bottomleft_y = gap_rect.bottomleft[1]
-        gap_rect_topleft_x = gap_rect.topleft[0]
-        gap_rect_topleft_y = gap_rect.topleft[1]
-    
-     #DRAW BOTTOM
-        self.draw_rect_top_left(gap_rect_bottomleft_x, gap_rect_bottomleft_y)
-    
-    #DRAW TOP
-        self.draw_rect_bottom_left(gap_rect_topleft_x, gap_rect_topleft_y)
-
-        if gap_rect.colliderect(big_chungus_pixel_rect):
-            if_score = True
-            print("collision with gap rect")
-
         
     def death(self):
         if self.rect.collidepoint(big_chungus_pixel_rect.center):
@@ -116,6 +93,52 @@ def menu():
 def score_display():
     hp_font.messagedraw(str(game_score), SCREEN_WIDTH/2, 100)
 
+def procedural_generate1(gap_x_pos, gap_height, scale):
+
+
+        #gap rect
+        gap_width = top_obstacle1.width
+        gap_rect = pygame.rect.Rect((gap_x_pos, gap_y_pos), (gap_width, gap_height))
+        gap_rect.midleft = (gap_x_pos, gap_y_pos)
+
+            #GAP RECT POSITIONS
+        gap_rect_bottomleft_x = gap_rect.bottomleft[0]
+        gap_rect_bottomleft_y = gap_rect.bottomleft[1]
+        gap_rect_topleft_x = gap_rect.topleft[0]
+        gap_rect_topleft_y = gap_rect.topleft[1]
+    
+     #DRAW BOTTOM
+        top_obstacle1.draw_rect_top_left(gap_rect_bottomleft_x, gap_rect_bottomleft_y)
+    
+    #DRAW TOP
+        bottom_obstacle1.draw_rect_bottom_left(gap_rect_topleft_x, gap_rect_topleft_y)
+
+        if top_obstacle1.rect.colliderect(big_chungus_pixel_rect) or bottom_obstacle1.rect.colliderect(big_chungus_pixel_rect):
+            game_over = True
+
+def procedural_generate2(gap_x_pos, gap_height, scale):
+
+        #gap rect
+        gap_width = top_obstacle2.width
+        gap_rect = pygame.rect.Rect((gap_x_pos, gap_y_pos), (gap_width, gap_height))
+        gap_rect.midleft = (gap_x_pos, gap_y_pos)
+
+            #GAP RECT POSITIONS
+        gap_rect_bottomleft_x = gap_rect.bottomleft[0]
+        gap_rect_bottomleft_y = gap_rect.bottomleft[1]
+        gap_rect_topleft_x = gap_rect.topleft[0]
+        gap_rect_topleft_y = gap_rect.topleft[1]
+    
+     #DRAW BOTTOM
+        top_obstacle2.draw_rect_top_left(gap_rect_bottomleft_x, gap_rect_bottomleft_y)
+    
+    #DRAW TOP
+        bottom_obstacle2.draw_rect_bottom_left(gap_rect_topleft_x, gap_rect_topleft_y)
+
+        if top_obstacle2.rect.colliderect(big_chungus_pixel_rect) or bottom_obstacle2.rect.colliderect(big_chungus_pixel_rect):
+            game_over = True
+
+
 
 
 pygame.init()
@@ -143,8 +166,8 @@ city_background_file = "flappy chungus/Graphics/Sprites/citybackground.jpg"
 city_background = Sprite(city_background_file, 3.1)
 
 uganda_knuckles_file = "flappy chungus/Graphics/Sprites/ugandaknucklessprite.png"
-obstacle1 = Sprite(uganda_knuckles_file)
-obstacle2 = Sprite(uganda_knuckles_file)
+
+
 
 #Player
 big_chungus_pixel_file = "flappy chungus/Graphics/Sprites/pixelbigchungussprite.png"
@@ -158,8 +181,8 @@ big_chungus_pixel_rect.center = (50, SCREEN_HEIGHT/2)
 PLAYER_GRAV = 0
 
 #procedural generate 
-obstacle_gap_lower = big_chungus_pixel_rect.height + 50
-obstacle_gap_higher = big_chungus_pixel_rect.height + 700
+obstacle_gap_lower = big_chungus_pixel_rect.height + 70
+obstacle_gap_higher = big_chungus_pixel_rect.height + 600
 top_limit  = 50
 bottom_limit = SCREEN_HEIGHT
 gap_y_pos = SCREEN_HEIGHT/2
@@ -231,10 +254,15 @@ while run:
 
         #OBSTACLES
         if obst2_on_screen == False and obst1_on_screen == False:
+            top_obstacle1 = Sprite(uganda_knuckles_file, scale)
+            bottom_obstacle1 = Sprite(uganda_knuckles_file, scale)
             gap_height1 = random.randint(obstacle_gap_lower, obstacle_gap_higher)
             scale1 = random.randint(3,10)
             scale1 /= 10 
 
+            #create obstacles
+            top_obstacle1 = Sprite(uganda_knuckles_file, scale1)
+            bottom_obstacle1 = Sprite(uganda_knuckles_file, scale1)
             #NO INF LOOPS
             obst1_on_screen = True
 
@@ -249,9 +277,11 @@ while run:
             obst1_on_screen = True
 
         if obst1_on_screen:
-            obstacle1.procedural_generate(gap_x_pos1, gap_height1, scale1)
-            death_check1 = obstacle1.death()
+            procedural_generate1(gap_x_pos1, gap_height1, scale1)
             gap_x_pos1 -= 4
+            #DEATH 
+            if top_obstacle1.rect.colliderect(big_chungus_pixel_rect) or bottom_obstacle1.rect.colliderect(big_chungus_pixel_rect):
+                game_over = True
 
         #DRAW OBJECT 2
         if gap_x_pos1 < 300 and obst2_on_screen == False:
@@ -261,16 +291,21 @@ while run:
             gap_height2 = random.randint(obstacle_gap_lower, obstacle_gap_higher)
             scale2 = random.randint(3,10)
             scale2 /= 10 
+
+            #create obstacles
+            top_obstacle2 = Sprite(uganda_knuckles_file, scale2)
+            bottom_obstacle2 = Sprite(uganda_knuckles_file, scale2)
+            
             #MAKE SURE NOT TO INFINITELY CREATE OBST
             obst2_on_screen = True
 
         if obst2_on_screen:
-            obstacle2.procedural_generate(gap_x_pos2, gap_height2, scale2)
-            death_check2 = obstacle2.death()
-            if death_check2 == "death":
-                game_over = True
+            procedural_generate2(gap_x_pos2, gap_height2, scale2)
             gap_x_pos2 -= 4
 
+            #DEATH
+            if top_obstacle2.rect.colliderect(big_chungus_pixel_rect) or bottom_obstacle2.rect.colliderect(big_chungus_pixel_rect):
+                game_over = True
 
         #KILL OBJS
         if gap_x_pos1 < -SCREEN_HEIGHT:
@@ -290,10 +325,6 @@ while run:
 
         #SCORE
 
-        #DEATH CHECK
-
-        if death_check1 == "death":
-            game_over = True
 
         #DRAW SCORE
         score_display()
