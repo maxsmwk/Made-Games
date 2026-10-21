@@ -44,15 +44,12 @@ class Sprite:
         screen.blit(self.image, self.rect)
 
     def procedural_generate(self, gap_x_pos, gap_height, scale):
-    #GENERATE ON SCREEN RANDOM
-        scale = random.randint(3,10)
-        scale /= 10 
-            
+        #SCORE CHECK
         gap_width = self.width
         gap_rect = pygame.rect.Rect((gap_x_pos, gap_y_pos), (gap_width, gap_height))
         gap_rect.midleft = (gap_x_pos, gap_y_pos)
 
-        #GAP RECT POSITIONS
+            #GAP RECT POSITIONS
         gap_rect_bottomleft_x = gap_rect.bottomleft[0]
         gap_rect_bottomleft_y = gap_rect.bottomleft[1]
         gap_rect_topleft_x = gap_rect.topleft[0]
@@ -63,6 +60,20 @@ class Sprite:
     
     #DRAW TOP
         self.draw_rect_bottom_left(gap_rect_topleft_x, gap_rect_topleft_y)
+
+        if gap_rect.colliderect(big_chungus_pixel_rect):
+            if_score = True
+            print("collision with gap rect")
+
+        
+    def death(self):
+        if self.rect.collidepoint(big_chungus_pixel_rect.center):
+            return "death"
+
+
+
+
+
 
 
 
@@ -98,34 +109,13 @@ class Font:
 
 
 def menu():
-        screen.fill((60, 130, 200))
-        play_button.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
-        hp_font.messagedraw("Flappy Chungus", SCREEN_WIDTH/2, 100)
+    screen.fill((60, 130, 200))
+    play_button.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+    hp_font.messagedraw("Flappy Chungus", SCREEN_WIDTH/2, 100)
 
-def procedural_generate(gap_x_pos, gap_height, scale):
-    
-    #GENERATE ON SCREEN RANDOM
-    uganda_knuckles_upper = Sprite(uganda_knuckles_file, scale)
-    uganda_knuckles_lower = Sprite(uganda_knuckles_file, scale)
-    gap_width = uganda_knuckles_upper.width
-    gap_rect = pygame.rect.Rect((gap_x_pos, gap_y_pos), (gap_width, gap_height))
-    gap_rect.midleft = (gap_x_pos, gap_y_pos)
+def score_display():
+    hp_font.messagedraw(str(game_score), SCREEN_WIDTH/2, 100)
 
-    #GAP RECT POSITIONS
-    gap_rect_bottomleft_x = gap_rect.bottomleft[0]
-    gap_rect_bottomleft_y = gap_rect.bottomleft[1]
-    gap_rect_topleft_x = gap_rect.topleft[0]
-    gap_rect_topleft_y = gap_rect.topleft[1]
-    
-    #DRAW BOTTOM
-    uganda_knuckles_lower.draw_rect_top_left(gap_rect_bottomleft_x, gap_rect_bottomleft_y)
-    
-    #DRAW TOP
-    uganda_knuckles_upper.draw_rect_bottom_left(gap_rect_topleft_x, gap_rect_topleft_y)
-
-
-
-    
 
 
 pygame.init()
@@ -161,7 +151,7 @@ big_chungus_pixel_file = "flappy chungus/Graphics/Sprites/pixelbigchungussprite.
 big_chungus_pixel = pygame.image.load(big_chungus_pixel_file).convert_alpha()
 big_chungus_pixel_width = big_chungus_pixel.get_width()
 big_chungus_pixel_height = big_chungus_pixel.get_height()
-scale = .2
+scale = .1
 big_chungus_pixel = pygame.transform.scale(big_chungus_pixel, ((big_chungus_pixel_width * scale), (big_chungus_pixel_height * scale)))
 big_chungus_pixel_rect = big_chungus_pixel.get_rect()
 big_chungus_pixel_rect.center = (50, SCREEN_HEIGHT/2)
@@ -177,7 +167,8 @@ gap_x_pos1 = SCREEN_WIDTH/2
 gap_x_pos2 = SCREEN_WIDTH + 200
 
 
-
+#score
+game_score = 0
 
 #FONTS
 hp_font = Font("flappy chungus/Graphics/Text/PermanentMarker-Regular.ttf", 50)
@@ -224,6 +215,7 @@ while run:
     #BG
         city_background.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
         hp_font.messagedraw("Space To Begin", SCREEN_WIDTH/2, 100)
+
     if game_active:
 
         #KEYBOARD INPUT
@@ -258,6 +250,7 @@ while run:
 
         if obst1_on_screen:
             obstacle1.procedural_generate(gap_x_pos1, gap_height1, scale1)
+            death_check1 = obstacle1.death()
             gap_x_pos1 -= 4
 
         #DRAW OBJECT 2
@@ -273,6 +266,9 @@ while run:
 
         if obst2_on_screen:
             obstacle2.procedural_generate(gap_x_pos2, gap_height2, scale2)
+            death_check2 = obstacle2.death()
+            if death_check2 == "death":
+                game_over = True
             gap_x_pos2 -= 4
 
 
@@ -292,12 +288,24 @@ while run:
             big_chungus_pixel_rect.top = 50
         screen.blit(big_chungus_pixel, big_chungus_pixel_rect)
 
+        #SCORE
+
+        #DEATH CHECK
+
+        if death_check1 == "death":
+            game_over = True
+
+        #DRAW SCORE
+        score_display()
+
     if game_over:
         screen.fill((60, 130, 200))
         PLAYER_GRAV = 0
         big_chungus_pixel_rect.center = (50, SCREEN_HEIGHT/2)
         play_again_button.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
         hp_font.messagedraw("Game Over...", SCREEN_WIDTH/2, 100)
+        gap_x_pos1 = SCREEN_WIDTH/2
+        gap_x_pos2 = SCREEN_WIDTH + 200
 
     #DISPLAY UPDATE
     pygame.display.update()
