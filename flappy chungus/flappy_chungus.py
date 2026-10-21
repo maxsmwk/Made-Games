@@ -43,6 +43,28 @@ class Sprite:
         pygame.draw.rect(screen, color, self.rect)
         screen.blit(self.image, self.rect)
 
+    def procedural_generate(self, gap_x_pos, gap_height, scale):
+    #GENERATE ON SCREEN RANDOM
+        scale = random.randint(3,10)
+        scale /= 10 
+            
+        gap_width = self.width
+        gap_rect = pygame.rect.Rect((gap_x_pos, gap_y_pos), (gap_width, gap_height))
+        gap_rect.midleft = (gap_x_pos, gap_y_pos)
+
+        #GAP RECT POSITIONS
+        gap_rect_bottomleft_x = gap_rect.bottomleft[0]
+        gap_rect_bottomleft_y = gap_rect.bottomleft[1]
+        gap_rect_topleft_x = gap_rect.topleft[0]
+        gap_rect_topleft_y = gap_rect.topleft[1]
+    
+     #DRAW BOTTOM
+        self.draw_rect_top_left(gap_rect_bottomleft_x, gap_rect_bottomleft_y)
+    
+    #DRAW TOP
+        self.draw_rect_bottom_left(gap_rect_topleft_x, gap_rect_topleft_y)
+
+
 
 
 
@@ -131,7 +153,8 @@ city_background_file = "flappy chungus/Graphics/Sprites/citybackground.jpg"
 city_background = Sprite(city_background_file, 3.1)
 
 uganda_knuckles_file = "flappy chungus/Graphics/Sprites/ugandaknucklessprite.png"
-
+obstacle1 = Sprite(uganda_knuckles_file)
+obstacle2 = Sprite(uganda_knuckles_file)
 
 #Player
 big_chungus_pixel_file = "flappy chungus/Graphics/Sprites/pixelbigchungussprite.png"
@@ -145,8 +168,8 @@ big_chungus_pixel_rect.center = (50, SCREEN_HEIGHT/2)
 PLAYER_GRAV = 0
 
 #procedural generate 
-obstacle_gap_lower = big_chungus_pixel_rect.height + 30
-obstacle_gap_higher = big_chungus_pixel_rect.height + 400
+obstacle_gap_lower = big_chungus_pixel_rect.height + 50
+obstacle_gap_higher = big_chungus_pixel_rect.height + 700
 top_limit  = 50
 bottom_limit = SCREEN_HEIGHT
 gap_y_pos = SCREEN_HEIGHT/2
@@ -216,20 +239,28 @@ while run:
 
         #OBSTACLES
         if obst2_on_screen == False and obst1_on_screen == False:
-            #GENERATE RANDOM OBSTACLE
-            gap_y_pos1 = random.randint(top_limit, bottom_limit)
             gap_height1 = random.randint(obstacle_gap_lower, obstacle_gap_higher)
             scale1 = random.randint(3,10)
             scale1 /= 10 
-            
 
-            #MAKE SURE NOT TO INFITIELY CREATE OBSTS
+            #NO INF LOOPS
+            obst1_on_screen = True
+
+        #DRAW OBJ 1
+        elif obst1_on_screen == False:
+            gap_x_pos1 = SCREEN_WIDTH + 100
+            gap_height1 = random.randint(obstacle_gap_lower, obstacle_gap_higher)
+            scale1 = random.randint(3,10)
+            scale1 /= 10 
+
+            #NO INF LOOPS
             obst1_on_screen = True
 
         if obst1_on_screen:
-            procedural_generate(gap_x_pos1, gap_height1, scale1)
+            obstacle1.procedural_generate(gap_x_pos1, gap_height1, scale1)
             gap_x_pos1 -= 4
 
+        #DRAW OBJECT 2
         if gap_x_pos1 < 300 and obst2_on_screen == False:
             #GENERATE RANDOM OBJECT
             gap_x_pos2 = SCREEN_WIDTH + 100
@@ -241,11 +272,17 @@ while run:
             obst2_on_screen = True
 
         if obst2_on_screen:
-            procedural_generate(gap_x_pos2, gap_height2, scale2)
-            gap_x_pos2 += 1
+            obstacle2.procedural_generate(gap_x_pos2, gap_height2, scale2)
+            gap_x_pos2 -= 4
 
+
+        #KILL OBJS
         if gap_x_pos1 < -SCREEN_HEIGHT:
             obst1_on_screen = False
+
+        if gap_x_pos2 < -SCREEN_HEIGHT:
+            obst2_on_screen = False
+
         #PLAYER
         PLAYER_GRAV += 1
         big_chungus_pixel_rect.y += PLAYER_GRAV
