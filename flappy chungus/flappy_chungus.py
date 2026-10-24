@@ -35,11 +35,17 @@ class Sprite:
 
     def draw_rect_top_left(self, x, y, color = "Red"):
         self.rect.topleft = (x, y)
+        y_bottom_left = self.rect.bottomleft[1]
+        if y_bottom_left < SCREEN_HEIGHT:
+            self.height = SCREEN_HEIGHT - y_bottom_left
         pygame.draw.rect(screen, color, self.rect)
         screen.blit(self.image, self.rect)
 
     def draw_rect_bottom_left(self, x, y, color = "Red"):
         self.rect.bottomleft = (x, y)
+        y_bottom_left = self.rect.topleft[1]
+        if y_bottom_left > top_limit:
+            self.height = y
         pygame.draw.rect(screen, color, self.rect)
         screen.blit(self.image, self.rect)
         
@@ -177,15 +183,14 @@ big_chungus_pixel_rect.center = (50, SCREEN_HEIGHT/2)
 PLAYER_GRAV = 0
 
 #procedural generate 
-obstacle_gap_lower = big_chungus_pixel_rect.height + 90
-obstacle_gap_higher = big_chungus_pixel_rect.height + 300
+obstacle_gap_lower = big_chungus_pixel_rect.height + 100
+obstacle_gap_higher = big_chungus_pixel_rect.height + 600
 top_limit  = 150
 bottom_limit = SCREEN_HEIGHT - obstacle_gap_lower
 gap_y_pos = SCREEN_HEIGHT/2
 gap_x_pos1 = SCREEN_WIDTH/2
 gap_x_pos2 = SCREEN_WIDTH + 200
-#score
-game_score = 0
+
 
 #FONTS
 hp_font = Font("flappy chungus/Graphics/Text/PermanentMarker-Regular.ttf", 50)
@@ -265,7 +270,7 @@ while run:
             bottom_obstacle1 = Sprite(uganda_knuckles_file, scale)
             gap_height1 = random.randint(obstacle_gap_lower, obstacle_gap_higher)
             gap_y_pos1 = random.randint(top_limit, bottom_limit)
-            scale1 = random.randint(4,10)
+            scale1 = random.randint(3,10)
             scale1 /= 10 
 
             #create obstacles
