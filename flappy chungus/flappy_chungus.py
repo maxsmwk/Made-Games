@@ -37,15 +37,17 @@ class Sprite:
         self.rect.topleft = (x, y)
         y_bottom_left = self.rect.bottomleft[1]
         if y_bottom_left < SCREEN_HEIGHT:
-            self.height = SCREEN_HEIGHT - y_bottom_left
+            new_height = SCREEN_HEIGHT - y_bottom_left
+            self.height = new_height
         pygame.draw.rect(screen, color, self.rect)
         screen.blit(self.image, self.rect)
 
     def draw_rect_bottom_left(self, x, y, color = "Red"):
         self.rect.bottomleft = (x, y)
         y_bottom_left = self.rect.topleft[1]
-        if y_bottom_left > top_limit:
-            self.height = y
+        if y_bottom_left > 0:
+            new_height = y_bottom_left
+            self.height = new_height
         pygame.draw.rect(screen, color, self.rect)
         screen.blit(self.image, self.rect)
         
