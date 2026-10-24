@@ -72,7 +72,6 @@ class Sprite:
         #screen.blit(self.image, self.rect)
 
 
-
 #FONT CLASS
 class Font:
     def __init__(self, font, size):
@@ -89,11 +88,13 @@ def menu():
     screen.fill((60, 130, 200))
     play_button.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
     hp_font.messagedraw("Flappy Chungus", SCREEN_WIDTH/2, 100)
-
+    
 def score_display():
-    hp_font.messagedraw(str(game_score), SCREEN_WIDTH/2, 100)
+    current_time = pygame.time.get_ticks() - start_time
+    score = current_time // 1000
+    hp_font.messagedraw(str(score), SCREEN_WIDTH/2, 100)
 
-def procedural_generate1(gap_x_pos, gap_height, scale):
+def procedural_generate1(gap_x_pos, gap_y_pos, gap_height, scale):
 
 
         #gap rect
@@ -113,10 +114,8 @@ def procedural_generate1(gap_x_pos, gap_height, scale):
     #DRAW TOP
         bottom_obstacle1.draw_rect_bottom_left(gap_rect_topleft_x, gap_rect_topleft_y)
 
-        if top_obstacle1.rect.colliderect(big_chungus_pixel_rect) or bottom_obstacle1.rect.colliderect(big_chungus_pixel_rect):
-            game_over = True
 
-def procedural_generate2(gap_x_pos, gap_height, scale):
+def procedural_generate2(gap_x_pos, gap_y_pos, gap_height, scale):
 
         #gap rect
         gap_width = top_obstacle2.width
@@ -135,10 +134,7 @@ def procedural_generate2(gap_x_pos, gap_height, scale):
     #DRAW TOP
         bottom_obstacle2.draw_rect_bottom_left(gap_rect_topleft_x, gap_rect_topleft_y)
 
-        if top_obstacle2.rect.colliderect(big_chungus_pixel_rect) or bottom_obstacle2.rect.colliderect(big_chungus_pixel_rect):
-            game_over = True
-
-
+    
 
 
 pygame.init()
@@ -181,15 +177,13 @@ big_chungus_pixel_rect.center = (50, SCREEN_HEIGHT/2)
 PLAYER_GRAV = 0
 
 #procedural generate 
-obstacle_gap_lower = big_chungus_pixel_rect.height + 70
-obstacle_gap_higher = big_chungus_pixel_rect.height + 600
-top_limit  = 50
-bottom_limit = SCREEN_HEIGHT
+obstacle_gap_lower = big_chungus_pixel_rect.height + 90
+obstacle_gap_higher = big_chungus_pixel_rect.height + 300
+top_limit  = 150
+bottom_limit = SCREEN_HEIGHT - obstacle_gap_lower
 gap_y_pos = SCREEN_HEIGHT/2
 gap_x_pos1 = SCREEN_WIDTH/2
 gap_x_pos2 = SCREEN_WIDTH + 200
-
-
 #score
 game_score = 0
 
@@ -201,9 +195,15 @@ game_active = False
 if_play = False
 game_over = False
 menu_active = True
+
+#BOOLS CONCERNING OBSTACLES
 obst1_on_screen = False
 obst2_on_screen = False
+#RUN LOOP
 run = True
+
+#START TIME 
+start_time = 0
 
 while run:
 
@@ -223,6 +223,13 @@ while run:
                 game_over = False
                 game_active = False
                 if_play = True
+                start_time = pygame.time.get_ticks()
+
+
+
+
+
+
 
     #MENU
     if menu_active:
@@ -257,7 +264,8 @@ while run:
             top_obstacle1 = Sprite(uganda_knuckles_file, scale)
             bottom_obstacle1 = Sprite(uganda_knuckles_file, scale)
             gap_height1 = random.randint(obstacle_gap_lower, obstacle_gap_higher)
-            scale1 = random.randint(3,10)
+            gap_y_pos1 = random.randint(top_limit, bottom_limit)
+            scale1 = random.randint(4,10)
             scale1 /= 10 
 
             #create obstacles
@@ -269,19 +277,21 @@ while run:
         #DRAW OBJ 1
         elif obst1_on_screen == False:
             gap_x_pos1 = SCREEN_WIDTH + 100
+            gap_y_pos1 = random.randint(top_limit, bottom_limit)
             gap_height1 = random.randint(obstacle_gap_lower, obstacle_gap_higher)
-            scale1 = random.randint(3,10)
+            scale1 = random.randint(4,10)
             scale1 /= 10 
 
             #NO INF LOOPS
             obst1_on_screen = True
 
         if obst1_on_screen:
-            procedural_generate1(gap_x_pos1, gap_height1, scale1)
+            procedural_generate1(gap_x_pos1, gap_y_pos1, gap_height1, scale1)
             gap_x_pos1 -= 4
             #DEATH 
             if top_obstacle1.rect.colliderect(big_chungus_pixel_rect) or bottom_obstacle1.rect.colliderect(big_chungus_pixel_rect):
                 game_over = True
+
 
         #DRAW OBJECT 2
         if gap_x_pos1 < 300 and obst2_on_screen == False:
@@ -289,7 +299,7 @@ while run:
             gap_x_pos2 = SCREEN_WIDTH + 100
             gap_y_pos2 = random.randint(top_limit, bottom_limit)
             gap_height2 = random.randint(obstacle_gap_lower, obstacle_gap_higher)
-            scale2 = random.randint(3,10)
+            scale2 = random.randint(4,10)
             scale2 /= 10 
 
             #create obstacles
@@ -300,19 +310,22 @@ while run:
             obst2_on_screen = True
 
         if obst2_on_screen:
-            procedural_generate2(gap_x_pos2, gap_height2, scale2)
+            procedural_generate2(gap_x_pos2, gap_y_pos2, gap_height2, scale2)
             gap_x_pos2 -= 4
 
             #DEATH
             if top_obstacle2.rect.colliderect(big_chungus_pixel_rect) or bottom_obstacle2.rect.colliderect(big_chungus_pixel_rect):
                 game_over = True
 
+
         #KILL OBJS
         if gap_x_pos1 < -SCREEN_HEIGHT:
             obst1_on_screen = False
+            check_score = False
 
         if gap_x_pos2 < -SCREEN_HEIGHT:
             obst2_on_screen = False
+            check_score = False 
 
         #PLAYER
         PLAYER_GRAV += 1
@@ -323,15 +336,13 @@ while run:
             big_chungus_pixel_rect.top = 50
         screen.blit(big_chungus_pixel, big_chungus_pixel_rect)
 
-        #SCORE
-
-
         #DRAW SCORE
         score_display()
 
     if game_over:
         screen.fill((60, 130, 200))
         PLAYER_GRAV = 0
+        end_time = pygame.time.get_ticks()
         big_chungus_pixel_rect.center = (50, SCREEN_HEIGHT/2)
         play_again_button.draw(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
         hp_font.messagedraw("Game Over...", SCREEN_WIDTH/2, 100)
